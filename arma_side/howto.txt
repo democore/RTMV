@@ -1,0 +1,12 @@
+Made by Democore
+http://forums.bistudio.com/showthread.php?178364-Real-time-Browser-Map
+
+Alpha release 0.30
+
+Howto:
+
+- forward tcp port 3000
+- copy the content of the folder "Copy content into arma 3 root folder" into arma root
+- start server with the @RTMS mod
+- browse to http://justdev.de/ and enter your ip.
+- Click on Connect
