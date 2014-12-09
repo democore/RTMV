@@ -21,8 +21,9 @@ while {true} do
 {
 	sleep 0.2;
 	_startTime = diag_tickTime;
-	_strToSend = "UNITS__REAL_";
+	_strToSend = "";
 	_count = 0;
+	_sentMsgCount = 0;
 	_maxCount = count allUnits;
 	//einheiten ?bertragen
 	{
@@ -47,41 +48,68 @@ while {true} do
 
 			_unit = [getPos _x, name _x, groupID (group _x), getDammage _x, str (side _x), getDir _x, _items, _waypoints, "#"];
 			_strToSend = format["%1%2", _strToSend, str _unit];
+			
 			if(count(toArray(_strToSend)) > 3000) then
 			{
-				_strToSend = "SVR_MSG_" + _strToSend;
+				if(_sentMsgCount == 0) then
+				{
+					_strToSend = "SVR_MSG_START_UNITS_" + _strToSend;
+					hint "1";
+				};
 				_returned = "ArmaToExternConnector" callExtension _strToSend;
 				_strToSend = "";
+				_sentMsgCount = _sentMsgCount + 1;
 			};
 			if(_count == (_maxCount - 1)) then
 			{
-				_strToSend = format["SVR_MSG_%1%2", _strToSend, "#END_OF_MESSAGE#"];
+				if(_sentMsgCount == 0) then
+				{
+					_strToSend = format["SVR_MSG_START_UNITS_%1%2", _strToSend, "#END_OF_MESSAGE_UNITS#"];
+				}
+				else
+				{
+					_strToSend = format["SVR_MSG_UNITS_%1%2", _strToSend, "#END_OF_MESSAGE_UNITS#"];
+					hint "2";
+				};
 				_returned = "ArmaToExternConnector" callExtension _strToSend;
+				_sentMsgCount = _sentMsgCount + 1;
+				_strToSend = "";
 			};
 		};
 		_count = _count + 1;
 	}
 	foreach allUnits;
+	_sentMsgCount = 0;
 	//SVR_MSG_
 
 	
 	_unitEndTime = diag_tickTime;
 
-	_strToSend = "SVR_MSG_VEHIC_";
+	_strToSend = "SVR_MSG_START_VEHICLES_";
 	{
-		_strToSend = _strToSend + "[" + str (getPos _x) + "," +(typeOf _x) + "," + str (getDir _x) + "," + str (crew _x) +  "]";
+		_crew = fullCrew _x;
+		_crewString = "";
+		{
+			_crewString = _crewString + "[" + (name (_x select 0)); 
+			_crewString = _crewString + "," + str(_x select 1); 
+			_crewString = _crewString + "," + str(_x select 2); 
+			_crewString = _crewString + "," + str(_x select 3);
+			_crewString = _crewString + "," + str(_x select 4) + "],";
+		}
+		foreach _crew;
+		_strToSend = _strToSend + "[" + str (getPos _x) + "," +(typeOf _x) + "," + str (getDir _x) + ",[" + _crewString + "]" + "]";
 	}
 	foreach vehicles;
 
-	"ArmaToExternConnector" callExtension _strToSend;
+	"ArmaToExternConnector" callExtension _strToSend + "#END_OF_MESSAGE_VEHICLES#";
 
-	_strToSend = "SVR_MSG_MARKERS_";
+	_strToSend = "SVR_MSG_START_MARKERS_";
 	{
 		_markerText = (markerText _x);
 		if(_markerText == "") then { _markerText = " "};
 		_strToSend = _strToSend + "[" + (str (getMarkerPos _x)) + "," + (getMarkerType _x) + "," + _markerText + "," +  _x + "]";
 	} forEach allMapMarkers;
-	"ArmaToExternConnector" callExtension _strToSend;
+	"ArmaToExternConnector" callExtension _strToSend + "#END_OF_MESSAGE_MARKERS#";
 	_endTime = diag_tickTime;
 	//hint format["Sent to server \n full time: %1 \n Unit Time: %2", _endTime - _startTime, _unitEndTime - _startTime];
 
