@@ -20,6 +20,7 @@ fnc_removeFromStr = {
 while {true} do
 {
 	sleep 0.2;
+	_future = time;
 	_startTime = diag_tickTime;
 	_strToSend = "";
 	_count = 0;
@@ -54,7 +55,10 @@ while {true} do
 				if(_sentMsgCount == 0) then
 				{
 					_strToSend = "SVR_MSG_START_UNITS_" + _strToSend;
-					hint "1";
+				}
+				else
+				{
+					_strToSend = "SVR_MSG_UNITS" + _strToSend;
 				};
 				_returned = "ArmaToExternConnector" callExtension _strToSend;
 				_strToSend = "";
@@ -69,7 +73,6 @@ while {true} do
 				else
 				{
 					_strToSend = format["SVR_MSG_UNITS_%1%2", _strToSend, "#END_OF_MESSAGE_UNITS#"];
-					hint "2";
 				};
 				_returned = "ArmaToExternConnector" callExtension _strToSend;
 				_sentMsgCount = _sentMsgCount + 1;
@@ -98,6 +101,11 @@ while {true} do
 		}
 		foreach _crew;
 		_strToSend = _strToSend + "[" + str (getPos _x) + "," +(typeOf _x) + "," + str (getDir _x) + ",[" + _crewString + "]" + "]";
+		if(count(toArray(_strToSend)) > 3000) then
+		{
+			"ArmaToExternConnector" callExtension _strToSend;
+			_strToSend = "SVR_MSG_VEHICLES_";
+		};
 	}
 	foreach vehicles;
 
@@ -112,7 +120,8 @@ while {true} do
 	"ArmaToExternConnector" callExtension _strToSend + "#END_OF_MESSAGE_MARKERS#";
 	_endTime = diag_tickTime;
 	//hint format["Sent to server \n full time: %1 \n Unit Time: %2", _endTime - _startTime, _unitEndTime - _startTime];
-
+	_future = time - _future;
+	hint format["time for loop: %1", _future];
 };
 
 //Substring
