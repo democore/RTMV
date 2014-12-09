@@ -55,7 +55,7 @@ while {true} do
 			};
 			if(_count == (_maxCount - 1)) then
 			{
-				_strToSend = format["SVR_MSG_%1%2", _strToSend, "#END_OF_MESSAGE#"];^
+				_strToSend = format["SVR_MSG_%1%2", _strToSend, "#END_OF_MESSAGE#"];
 				_returned = "ArmaToExternConnector" callExtension _strToSend;
 			};
 		};
