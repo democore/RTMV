@@ -21,7 +21,6 @@ while {true} do
 {
 	sleep 0.2;
 	_startTime = diag_tickTime;
-	//_units = [];
 	_strToSend = "UNITS__REAL_";
 	_count = 0;
 	_maxCount = count allUnits;
@@ -47,20 +46,16 @@ while {true} do
 			};
 
 			_unit = [getPos _x, name _x, groupID (group _x), getDammage _x, str (side _x), getDir _x, _items, _waypoints, "#"];
-			//_units = _units + _unit;
 			_strToSend = format["%1%2", _strToSend, str _unit];
 			if(count(toArray(_strToSend)) > 3000) then
 			{
 				_strToSend = "SVR_MSG_" + _strToSend;
 				_returned = "ArmaToExternConnector" callExtension _strToSend;
-				//hint _strToSend;
 				_strToSend = "";
-				//_units = [];
 			};
 			if(_count == (_maxCount - 1)) then
 			{
-				_strToSend = format["SVR_MSG_%1%2", _strToSend, "#END_OF_MESSAGE#"];
-				//hint format ["%1",count(toArray(_strToSend))];
+				_strToSend = format["SVR_MSG_%1%2", _strToSend, "#END_OF_MESSAGE#"];^
 				_returned = "ArmaToExternConnector" callExtension _strToSend;
 			};
 		};
@@ -68,50 +63,13 @@ while {true} do
 	}
 	foreach allUnits;
 	//SVR_MSG_
-	/*if(_first == 1) then
-	{
-		_strToSend = "SVR_MSG_UNITS__REAL_" + _units;
-		hint "got here";
-	};*/
-	
-	//hint format["sent length: %1 \n%2", count(toArray(_strToSend)), _strToSend];
-	/*_isFirst = true;
-	_completeUnitStringCount = count(toArray(_strToSend));
-	if(count(toArray(_strToSend)) > 3000) then
-	{
-		while{count(toArray(_strToSend)) > 0}do
-		{
-			_toSend = "";
-			_curLen = count(toArray(_strToSend));
-			if(_curLen >= 3000) then
-			{
-				_toSend = ([_strToSend, 0, 3000] call fnc_substr);
-				_strToSend = [_strToSend, 3000] call fnc_removeFromStr;
-			}
-			else
-			{
-				_toSend = _strToSend;
-				_strToSend = "";
-			};
-			if(!_isFirst) then
-			{
-				_toSend = "SVR_MSG_UNITS_" + _toSend;
-			};
-			_returned = "ArmaToExternConnector" callExtension _toSend;
 
-			_isFirst = false;
-		}
-	}
-	else
-	{
-		_returned = "ArmaToExternConnector" callExtension _strToSend;
-	};*/
 	
 	_unitEndTime = diag_tickTime;
 
 	_strToSend = "SVR_MSG_VEHIC_";
 	{
-		_strToSend = _strToSend + "[" + str (getPos _x) + "," +(typeOf _x) + "," + str (getDir _x) + "]";
+		_strToSend = _strToSend + "[" + str (getPos _x) + "," +(typeOf _x) + "," + str (getDir _x) + "," + str (crew _x) +  "]";
 	}
 	foreach vehicles;
 
