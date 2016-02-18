@@ -3,5 +3,8 @@ RTMV
 
 Real Time Arma Map Viewer
 
-1. Follow the explanation in the arma side howto.txt
-2. Open the map.html and connect to your server.
+- forward tcp port 3000
+- copy the content of the folder "Copy content into arma 3 root folder" into arma root
+- start server with the @RTMS mod
+- Open the web_side/html/map.html and connect to your server.
+- Click on Connect
